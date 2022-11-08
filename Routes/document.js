@@ -1,20 +1,20 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const config = require('config');
-const mysql = require('mysql');
-const db = mysql.createConnection(config.get('db'));
+const auth = require("../middleware/auth");
+const config = require("config");
+const mysql = require("mysql");
+const db = mysql.createConnection(config.get("db"));
 
 // @route POST api/document/add-invoice
 
 // @desc Add invoice
 
 // @access private
-router.post('/add-invoice', auth, async (req, res) => {
+router.post("/add-invoice", auth, async (req, res) => {
   let errors = {};
   try {
     db.query(
-      'INSERT INTO commercialinvoices set ?',
+      "INSERT INTO commercialinvoices set ?",
       req.body,
       (err, rows, fields) => {
         if (err) {
@@ -36,7 +36,7 @@ router.post('/add-invoice', auth, async (req, res) => {
 // @desc View invoices
 
 // @access private
-router.get('/invoices', auth, async (req, res) => {
+router.get("/invoices", auth, async (req, res) => {
   let errors = {};
 
   try {
@@ -62,11 +62,11 @@ router.get('/invoices', auth, async (req, res) => {
 // @desc Add shipping
 
 // @access private
-router.post('/add-shipping', auth, async (req, res) => {
+router.post("/add-shipping", auth, async (req, res) => {
   let errors = {};
   try {
     db.query(
-      'INSERT INTO shippinginstructions set ?',
+      "INSERT INTO shippinginstructions set ?",
       req.body,
       (err, rows, fields) => {
         if (err) {
@@ -88,7 +88,7 @@ router.post('/add-shipping', auth, async (req, res) => {
 // @desc View shippings
 
 // @access private
-router.get('/shippings', auth, async (req, res) => {
+router.get("/shippings", auth, async (req, res) => {
   let errors = {};
 
   try {
@@ -117,11 +117,11 @@ router.get('/shippings', auth, async (req, res) => {
 // @desc Add packing
 
 // @access private
-router.post('/add-packing', auth, async (req, res) => {
+router.post("/add-packing", auth, async (req, res) => {
   let errors = {};
   try {
     db.query(
-      'INSERT INTO packinglists set ?',
+      "INSERT INTO packinglists set ?",
       req.body,
       (err, rows, fields) => {
         if (err) {
@@ -143,7 +143,7 @@ router.post('/add-packing', auth, async (req, res) => {
 // @desc View packing lists
 
 // @access private
-router.get('/packings', auth, async (req, res) => {
+router.get("/packings", auth, async (req, res) => {
   let errors = {};
 
   try {
@@ -169,10 +169,10 @@ router.get('/packings', auth, async (req, res) => {
 // @desc Add waybill
 
 // @access private
-router.post('/add-waybill', auth, async (req, res) => {
+router.post("/add-waybill", auth, async (req, res) => {
   let errors = {};
   try {
-    db.query('INSERT INTO waybills set ?', req.body, (err, rows, fields) => {
+    db.query("INSERT INTO waybills set ?", req.body, (err, rows, fields) => {
       if (err) {
         console.log(err);
         errors.unknown = true;
@@ -191,7 +191,7 @@ router.post('/add-waybill', auth, async (req, res) => {
 // @desc View waybills
 
 // @access private
-router.get('/waybills', auth, async (req, res) => {
+router.get("/waybills", auth, async (req, res) => {
   let errors = {};
 
   try {
@@ -217,11 +217,11 @@ router.get('/waybills', auth, async (req, res) => {
 // @desc Add certificate
 
 // @access private
-router.post('/add-cert', auth, async (req, res) => {
+router.post("/add-cert", auth, async (req, res) => {
   let errors = {};
   try {
     db.query(
-      'INSERT INTO certificates set ?',
+      "INSERT INTO certificates set ?",
       req.body,
       (err, rows, fields) => {
         if (err) {
@@ -243,7 +243,7 @@ router.post('/add-cert', auth, async (req, res) => {
 // @desc View certificates
 
 // @access private
-router.get('/certs', auth, async (req, res) => {
+router.get("/certs", auth, async (req, res) => {
   let errors = {};
 
   try {
@@ -258,6 +258,61 @@ router.get('/certs', auth, async (req, res) => {
         return res.status(200).json([]);
       }
     });
+  } catch (err) {
+    errors.unknown = true;
+    res.status(500).send(errors);
+  }
+});
+
+// @route POST api/document/add-ship-dec
+
+// @desc Add Shipping Decleration
+
+// @access private
+router.post("/add-ship-dec", auth, async (req, res) => {
+  let errors = {};
+  try {
+    db.query(
+      "INSERT INTO shippingdeclerations set ?",
+      req.body,
+      (err, rows, fields) => {
+        if (err) {
+          console.log(err);
+          errors.unknown = true;
+          res.status(500).send(errors);
+        }
+        res.json(fields);
+      }
+    );
+  } catch (err) {
+    errors.unknown = true;
+    res.status(500).send(errors);
+  }
+});
+
+// @route GET api/document/ship-decs
+
+// @desc View certificates
+
+// @access private
+router.get("/ship-decs", auth, async (req, res) => {
+  let errors = {};
+
+  try {
+    db.query(
+      `SELECT * FROM shippingdeclerations`,
+      function (err, rows, fields) {
+        if (err) {
+          errors.unknown = true;
+          res.status(500).send(errors);
+        }
+        if (rows.length >= 1) {
+          res.json(rows);
+        } else {
+          return res.status(200).json([]);
+        }
+      }
+    );
   } catch (err) {
     errors.unknown = true;
     res.status(500).send(errors);
